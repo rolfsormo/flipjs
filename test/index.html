@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="require.js"></script>
+
+	<script type="text/javascript" src="flip.js"></script>
+	<script type="text/javascript" src="adapters/localStorage.js"></script>
+	<script type="text/javascript">
+	require(['flip'], function(Flip) {
+		console.log('flip', Flip);
+		var db = Flip.DB('xyz', {});
+		console.log(db.find({}));
+		db.insert({name:'a', value:'it works!'});
+		console.log(db.find({}));
+	});
+	</script>
+
+</head>
+
+<body>
+
+<h1>My First Heading</h1>
+
+<p>My first paragraph.</p>
+
+<script>
+console.log('Done loading.');
+</script>
+
+</body>
+</html>
+
