@@ -16,27 +16,27 @@ module.exports = (grunt) ->
         options:
           name: 'almond'
           out: 'flip-debug-almond.js'
-          include: 'flip'
+          include: 'Flip'
           paths:
             'almond': '../node_modules/almond/almond'
-          insertRequire: ['flip']
+          insertRequire: ['Flip']
           generateSourceMaps: true
           optimize: 'none'
 
       development:
         options:
-          name: 'flip'
+          name: 'Flip'
           out: 'flip-debug.js'
-          include: ['flip', 'adapters/localStorage']
-          insertRequire: ['flip']
+          include: ['Flip', 'adapters/MemStorage', 'adapters/LocalStorage']
+          insertRequire: ['Flip']
           generateSourceMaps: true
           optimize: 'none'
 
       production:
         options:
-          name: 'flip'
-          out: 'flip.js'
-          insertRequire: ['flip']
+          name: 'Flip'
+          out: 'Flip.js'
+          insertRequire: ['Flip']
 
     nodeunit:
       all: ['test/nodeunit/*_test.js']
