@@ -1,7 +1,7 @@
 {
   "name": "flip",
   "version": "0.0.0",
-  "description": "Flip is a mongo style interface to different js databases.",
+  "description": "Flip.js is a library that offers a mongo-style database layer on top of many different kinds of database providers.",
   "main": "flip.js",
   "scripts": {
     "test": "qunit -h"
