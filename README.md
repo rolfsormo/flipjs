@@ -40,31 +40,31 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
 ### To do
 
 * Specify Conditions Using Query Operators
-** $gt
-** $gte
-** $in
-** $lt
-** $lte
-** $ne
-** $nin
-** $or
-** $and
-** $not
-** $nor
-** $exists
-** $type
-** $mod
-** $regex
-** $where
-** $geoWithin
-** $geoIntersects
-** $near
-** $nearSphere
-** $all
-** $elemMatch
-** $size
-** $
-** $slice
+  * $gt
+  * $gte
+  * $in
+  * $lt
+  * $lte
+  * $ne
+  * $nin
+  * $or
+  * $and
+  * $not
+  * $nor
+  * $exists
+  * $type
+  * $mod
+  * $regex
+  * $where
+  * $geoWithin
+  * $geoIntersects
+  * $near
+  * $nearSphere
+  * $all
+  * $elemMatch
+  * $size
+  * $
+  * $slice
 
 
 ## How to get there
