@@ -36,9 +36,6 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
 ### Done
 
 * Specify Equality Condition
-
-### To do
-
 * Specify Conditions Using Query Operators
   * $gt
   * $gte
@@ -47,6 +44,10 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
   * $lte
   * $ne
   * $nin
+
+### To do
+
+* Specify Conditions Using Query Operators
   * $or
   * $and
   * $not
