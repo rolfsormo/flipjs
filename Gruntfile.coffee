@@ -45,6 +45,11 @@ module.exports = (grunt) ->
 
     nodeunit:
       all: ['test/nodeunit/*_test.js']
+
+    watch:
+      scripts:
+        files: ['lib/**/*.js']
+        tasks: ['default']
   
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
@@ -53,12 +58,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jshint'
 
   grunt.loadNpmTasks 'grunt-contrib-nodeunit'
-
+  grunt.loadNpmTasks 'grunt-contrib-watch'
 
   grunt.registerTask 'default', [
     'clean'
     'jshint'
     'requirejs:development'
     'nodeunit'
+    'watch'
   ]
 
