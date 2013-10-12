@@ -16,11 +16,13 @@ stabilized. Until then, use the familiar queries.
 ## Usage
 
 Install with:
+
 	1. bower (TODO)
 	1. npm (TODO)
 	1. Or just download the .js file and include in your project
 
 Supported ways of dependency resolution:
+
 	1. AMD
 	1. Node's require
 	1. Globals
