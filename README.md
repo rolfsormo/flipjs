@@ -27,12 +27,51 @@ Supported ways of dependency resolution:
 1. Node's require
 1. Globals
 
+- - -
+
+## Where we are now
+
+See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-documents/) for details.
+
+### Done
+
+* Specify Equality Condition
+
+### To do
+
+* Specify Conditions Using Query Operators
+** $gt
+** $gte
+** $in
+** $lt
+** $lte
+** $ne
+** $nin
+** $or
+** $and
+** $not
+** $nor
+** $exists
+** $type
+** $mod
+** $regex
+** $where
+** $geoWithin
+** $geoIntersects
+** $near
+** $nearSphere
+** $all
+** $elemMatch
+** $size
+** $
+** $slice
+
 
 ## How to get there
 
 The project is not there yet. A few steps have to be taken for this project to be mature. The steps are:
 
-1. Naïve (just make it work any way we can)
+1. Naïve (just make it work any way we can, in a handful of environments)
 1. Optimize (for example, use the SQL databases' indexes to our benefit)
-1. Profit
-1. Expand (like build a [meteor.com](http://meteor.com) like invisible client-server layer with live synch etc.)
+1. Expand within
+1. Expand without (like build a [meteor.com](http://meteor.com) like invisible client-server layer with live synch etc.)
