@@ -17,22 +17,22 @@ stabilized. Until then, use the familiar queries.
 
 Install with:
 
-	1. bower (TODO)
-	1. npm (TODO)
-	1. Or just download the .js file and include in your project
+1. bower (TODO)
+1. npm (TODO)
+1. Or just download the .js file and include in your project
 
 Supported ways of dependency resolution:
 
-	1. AMD
-	1. Node's require
-	1. Globals
+1. AMD
+1. Node's require
+1. Globals
 
 
 ## How to get there
 
 The project is not there yet. A few steps have to be taken for this project to be mature. The steps are:
 
-	1. Naïve (just make it work any way we can)
-	1. Optimize (for example, use the SQL databases' indexes to our benefit)
-	1. Profit
-	1. Expand (like build a (meteor.com)[http://meteor.com] like invisible client-server layer with live synch etc.)
+1. Naïve (just make it work any way we can)
+1. Optimize (for example, use the SQL databases' indexes to our benefit)
+1. Profit
+1. Expand (like build a (meteor.com)[http://meteor.com] like invisible client-server layer with live synch etc.)
