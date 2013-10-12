@@ -65,7 +65,19 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
   * $size
   * $
   * $slice
+* Subdocuments
+  * Exact Match on Subdocument
+  * Equality Match on Fields within Subdocument
+* Arrays
+  * Exact Match on an Array
+  * Match an Array Element
+  * Match a Specific Element of an Array
+  * Array of Subdocuments
+    * Match a Field in the Subdocument Using the Array Index
+    * Match a Field Without Specifying Array Index
+    * Match Multiple Fields
 
+- - -
 
 ## How to get there
 
@@ -73,7 +85,7 @@ The project is not there yet. A few steps have to be taken for this project to b
 
 1. Naïve (just make it work any way we can, in a handful of environments)
 1. Optimize (for example, use the SQL databases' indexes to our benefit)
-1. Expand within
+1. Expand within (implement the list above)
 1. Expand without (like build a [meteor.com](http://meteor.com) like invisible client-server layer with live synch etc.)
 
 
