@@ -36,8 +36,8 @@ exports.group1 = {
           test.equal(list.length, 1, 'Result list length');
           test.deepEqual(list, [{a:'a', _id:list[0]._id}], 'List equals');
           test.done();
-        })
+        });
       });
     });
   }
-}
+};

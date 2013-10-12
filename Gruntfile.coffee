@@ -12,16 +12,16 @@ module.exports = (grunt) ->
         baseUrl: 'lib'
         wrap: false
       
-      development_almond:
-        options:
-          name: 'almond'
-          out: 'flip-debug-almond.js'
-          include: 'Flip'
-          paths:
-            'almond': '../node_modules/almond/almond'
-          insertRequire: ['Flip']
-          generateSourceMaps: true
-          optimize: 'none'
+      # development_almond:
+      #   options:
+      #     name: 'almond'
+      #     out: 'flip-debug-almond.js'
+      #     include: 'Flip'
+      #     paths:
+      #       'almond': '../node_modules/almond/almond'
+      #     insertRequire: ['Flip']
+      #     generateSourceMaps: true
+      #     optimize: 'none'
 
       development:
         options:
@@ -38,6 +38,11 @@ module.exports = (grunt) ->
           out: 'Flip.js'
           insertRequire: ['Flip']
 
+    jshint:
+      gruntfile: ['Gruntfile']
+      code: ['lib/**/*.js', '!lib/vendor/**']
+      tests: ['test/**/*.js']
+
     nodeunit:
       all: ['test/nodeunit/*_test.js']
   
@@ -45,11 +50,15 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-copy'
 
   grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  grunt.loadNpmTasks 'grunt-contrib-jshint'
 
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks 'grunt-contrib-nodeunit'
 
 
   grunt.registerTask 'default', [
+    'clean'
+    'jshint'
     'requirejs:development'
     'nodeunit'
   ]
+
