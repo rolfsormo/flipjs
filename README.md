@@ -84,9 +84,9 @@ MemStorage is a very fast but not persistent storage option. It will be availabl
 
 If this option is set to `true` then MemStorage will not be detected.
 
-## Browser Support
+## Supported Platforms
 
-See [this wiki page](https://github.com/rolfsormo/flipjs/wiki/Browser-support).
+Flip.js is supported in different browsers and operating systems, and in [Node.js](http://nodejs.org/). See [this wiki page](https://github.com/rolfsormo/flipjs/wiki/Supported-Platforms) for a list of supported adapters for different platforms.
 
 - - -
 
