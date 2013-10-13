@@ -40,8 +40,8 @@ module.exports = (grunt) ->
 
     jshint:
       gruntfile: ['Gruntfile']
-      code: ['lib/**/*.js', '!lib/vendor/**']
-      tests: ['test/**/*.js']
+      code: ['lib/**/*.js', '!lib/vendor/**/*']
+      tests: ['test/**/*.js', '!test/vendor/**/*']
 
     nodeunit:
       all: ['test/nodeunit/*_test.js']

@@ -11,11 +11,11 @@ define('Test', ['Flip'], function(Flip) {
 		tearDown: function() {
 			db.dropDatabase();
 		}
-	})
+	});
 
 
 	test('Basics', function() {
-		expect(5);
+		expect(8);
 
 		var a = {a:'a'};
 		var b = {b:'b'};
@@ -27,10 +27,21 @@ define('Test', ['Flip'], function(Flip) {
 			db.insert(b, function(err, result) {
 				ok(!err, 'Error check');
 
+        b._id = result._id;
 				db.find({a:'a'}, function(err, res) {
 					ok(!err, 'Error check');
 
 					deepEqual([a], res, 'Find one object');
+
+          db.remove({a:'a'}, function(err, res) {
+            ok(!err, 'Error check');
+
+            db.find({}, function(err, res) {
+              ok(!err, 'Error check');
+
+              deepEqual(res, [b], 'Find one object');              
+            });
+          });
 				});
 			});
 		});
