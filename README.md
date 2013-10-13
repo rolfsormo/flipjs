@@ -27,6 +27,18 @@ Supported ways of dependency resolution:
 1. Node's require
 1. Globals
 
+## Example
+
+    var db = Flip.DB('Test', {});
+    db.insert({username: 'John'}, function(err, ob) {
+        if (err) return alert('Error! ' + err);
+
+        db.find({}, function(err, obs) {
+            if (err) return alert('Error! ' + err);
+            alert('username = ' + obs[0].username);
+        });
+    });
+
 ## Options
 
 If you want, you can give separate options for each adapter. In that case the format is:
