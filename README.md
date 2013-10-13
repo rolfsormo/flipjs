@@ -150,9 +150,7 @@ The project is not there yet. A few steps have to be taken for this project to b
 
 ## TODO
 
-- Make options support this: {defaults: {maxSize:10}, MemStorage:{maxSize:20}}
 - Make a wiki page with a table with all known browsers and show the default adapter for them (first one detected) and for each adapter if it is supported
-- Make common documentation for all adapters (like maxSize for the max db size), and for each adapter separately
 - Support ensureIndex() (when supported; depends on the adapter most likely)
 - Support SQL databases naïvely by storing keys and values there first, but later generate alter tables with all new ensureIndex() calls
 - Make browser tests, run them with some headless unit test framework
