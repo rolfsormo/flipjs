@@ -86,7 +86,7 @@ If this option is set to `true` then MemStorage will not be detected.
 
 ## Browser Support
 
-See [this wiki page](wiki/Browser support).
+See [this wiki page](https://github.com/rolfsormo/flipjs/wiki/Browser-support).
 
 - - -
 
