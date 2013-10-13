@@ -27,6 +27,52 @@ Supported ways of dependency resolution:
 1. Node's require
 1. Globals
 
+## Options
+
+If you want, you can give separate options for each adapter. In that case the format is:
+
+   {
+      common: {
+        option1: value1,
+        ...
+      },
+      Adapter1: {
+        option2: value2,
+        ...
+      }
+   }
+
+Options for a specific adapter are done by merging common options with adapter specific options.
+Common options are overrided by adapter specific options.
+
+Otherwise you should just give all the options directly at the top of the options object. This is useful
+when you are only defining options that are common to all adapters, or options that do not conflict. It is
+done like this:
+
+    {
+        option1: value1,
+        ...
+    }
+
+### Common options
+
+#### maxSize
+
+Specify the maximum database size (if supported by the adapter).
+
+### LocalStorage
+
+No options.
+
+### MemStorage
+
+MemStorage is a very fast but not persistent storage option. It will be available in all environments.
+
+#### requirePersistency
+
+If this option is set to `true` then MemStorage will not be detected.
+
+
 - - -
 
 ## Where we are now
