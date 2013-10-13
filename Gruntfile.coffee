@@ -71,4 +71,11 @@ module.exports = (grunt) ->
     'nodeunit'
     'watch'
   ]
+  grunt.registerTask 'test', [
+    'clean'
+    'jshint'
+    'requirejs:development'
+    'nodeunit'
+    'qunit'
+  ]
 
