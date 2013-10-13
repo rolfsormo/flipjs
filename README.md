@@ -84,6 +84,9 @@ MemStorage is a very fast but not persistent storage option. It will be availabl
 
 If this option is set to `true` then MemStorage will not be detected.
 
+## Browser Support
+
+See [this wiki page](Browser support).
 
 - - -
 
