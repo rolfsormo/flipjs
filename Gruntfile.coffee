@@ -50,6 +50,9 @@ module.exports = (grunt) ->
       scripts:
         files: ['lib/**/*.js']
         tasks: ['default']
+
+    qunit:
+      all: ['test/qunit/**/*_test.html']
   
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
@@ -59,6 +62,7 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-contrib-nodeunit'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-contrib-qunit'
 
   grunt.registerTask 'default', [
     'clean'

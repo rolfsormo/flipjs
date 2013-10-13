@@ -2,15 +2,14 @@
   "name": "flip",
   "version": "0.0.0",
   "description": "Flip.js is a library that offers a mongo-style database layer on top of many different kinds of database providers.",
-  "main": "flip.js",
+  "main": "lib/Flip.js",
   "scripts": {
     "test": "qunit -h"
   },
   "author": "Rolf Sormo <rolf.sormo@aphex.fi>",
+  "repository": "https://github.com/rolfsormo/flipjs/",
   "license": "MIT",
-  "main": "lib/Flip.js",
   "devDependencies": {
-    "qunit": "~0.5.16",
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-requirejs": "~0.4.1",
@@ -18,6 +17,7 @@
     "almond": "~0.2.6",
     "grunt-contrib-nodeunit": "~0.2.1",
     "grunt-contrib-jshint": "~0.6.4",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-qunit": "~0.3.0"
   }
 }
