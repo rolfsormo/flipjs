@@ -31,7 +31,7 @@ Supported ways of dependency resolution:
 
 If you want, you can give separate options for each adapter. In that case the format is:
 
-   {
+    {
       common: {
         option1: value1,
         ...
@@ -40,7 +40,7 @@ If you want, you can give separate options for each adapter. In that case the fo
         option2: value2,
         ...
       }
-   }
+    }
 
 Options for a specific adapter are done by merging common options with adapter specific options.
 Common options are overrided by adapter specific options.
