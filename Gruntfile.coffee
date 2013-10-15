@@ -8,35 +8,34 @@ module.exports = (grunt) ->
 
     requirejs:
       options:
-        # dir: 'build/development/javascripts'
         baseUrl: 'lib'
         wrap: false
       
-      # development_almond:
-      #   options:
-      #     name: 'almond'
-      #     out: 'flip-debug-almond.js'
-      #     include: 'Flip'
-      #     paths:
-      #       'almond': '../node_modules/almond/almond'
-      #     insertRequire: ['Flip']
-      #     generateSourceMaps: true
-      #     optimize: 'none'
+      full:
+        options:
+          name: 'almond'
+          out: 'Flip-full.js'
+          include: [
+            'Flip'
+            'adapters/LocalStorage'
+            'adapters/MemStorage'
+          ]
+          paths:
+            'almond': '../node_modules/almond/almond'
+          insertRequire: ['Flip']
 
-      development:
+      full_debug:
         options:
           name: 'Flip'
-          out: 'flip-debug.js'
-          include: ['Flip', 'adapters/MemStorage', 'adapters/LocalStorage']
+          out: 'Flip-debug.js'
+          include: [
+            'Flip'
+            'adapters/LocalStorage'
+            'adapters/MemStorage'
+          ]
           insertRequire: ['Flip']
           generateSourceMaps: true
           optimize: 'none'
-
-      production:
-        options:
-          name: 'Flip'
-          out: 'Flip.js'
-          insertRequire: ['Flip']
 
     jshint:
       gruntfile: ['Gruntfile']
@@ -77,5 +76,11 @@ module.exports = (grunt) ->
     'requirejs:development'
     'nodeunit'
     'qunit'
+  ]
+  grunt.registerTask 'build', [
+    'clean'
+    'jshint'
+    'requirejs:full'
+    'requirejs:full_debug'
   ]
 
