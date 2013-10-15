@@ -38,10 +38,6 @@ exports.group1 = {
       self.db.coll.insert(b, function(err, result) {
         test.ok(!err, 'Error');
 
-        self.db.coll.find({}, function(err, list) {
-          console.log('========== LIST', list);
-        });
-
         self.db.coll.find({a:'a'}, function(err, list) {
           test.ok(!err, 'Error');
 

@@ -47,7 +47,7 @@ module.exports = (grunt) ->
 
     watch:
       scripts:
-        files: ['lib/**/*.js']
+        files: ['lib/**/*.js', 'test/nodeunit/**/*.js']
         tasks: ['default']
 
     qunit:
@@ -66,7 +66,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', [
     'clean'
     'jshint'
-    'requirejs:development'
+    'requirejs:full'
     'nodeunit'
     'watch'
   ]
