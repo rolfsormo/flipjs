@@ -39,7 +39,6 @@ module.exports = (grunt) ->
           optimize: 'none'
 
     jshint:
-      gruntfile: ['Gruntfile']
       code: ['lib/**/*.js', '!lib/vendor/**/*']
       tests: ['test/**/*.js', '!test/vendor/**/*']
 
