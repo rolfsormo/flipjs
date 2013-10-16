@@ -1,4 +1,5 @@
 
+/*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
 
 (function (root, factory) {
   var moduleName = 'Flip';
@@ -72,7 +73,9 @@
 
 define("Flip", function(){});
 
-  (function (root, factory) {
+/*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
+
+(function (root, factory) {
   var moduleName = 'KeyValueAdapter';
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
@@ -84,7 +87,7 @@ define("Flip", function(){});
     module.exports = factory(require('./Flip'), require('./MongoMatcher'));
   } else {
     // Browser globals (root is window)
-    root[moduleName] = factory(root.flip, root.MongoMatcher);
+    root[moduleName] = factory(root.Flip, root.MongoMatcher);
   }
 }(this, function (Flip, MongoMatcher) {
 
@@ -108,12 +111,25 @@ define("Flip", function(){});
     // "Non-statics"
     KeyValueAdapter.prototype.connect = function(dbName, next) {
       this.dbName = dbName;
-      this.system = {};
+      this.system = adapter.get('system') || {};
+      this.system.collections = this.system.collections || {};
       // TODO: load system from db.
       next(undefined, this);
     };
+    function hasCollectionKey(collections, key) {
+      for(var k in collections) if (collections[k].key === key) return true;
+    }
+
     KeyValueAdapter.prototype.collection = function(collection, options) {
       var kva = this;
+      var sys = this.system.collections[collection] || {};
+
+      sys.key = sys.key || (this.dbName.substring(0,2) + collection.substring(0,2));
+      var i = 0;
+      while (hasCollectionKey(this.system.collections, sys.key)) {
+        sys.key = sys.key + i;
+        i++;
+      }
 
       function KVACollection() {
       }
@@ -123,7 +139,6 @@ define("Flip", function(){});
         var res = [];
         for(var i = 0; i < ids.length; i++) {
           var v = adapter.get(kva.dbName, collection, ids[i]);
-          console.log('v', v);
           var ob = JSON.parse(v);
           if (matcher.match(ob)) res.push(ob);
         }
@@ -163,6 +178,8 @@ define("Flip", function(){});
 
 
 define("KeyValueAdapter", function(){});
+
+/*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -232,6 +249,8 @@ define("KeyValueAdapter", function(){});
 
 
 define("adapters/LocalStorage", function(){});
+
+/*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {

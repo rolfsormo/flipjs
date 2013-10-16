@@ -3,13 +3,14 @@ path = require 'path'
 module.exports = (grunt) ->
 
   grunt.initConfig
+    pkg: grunt.file.readJSON('package.json')
+
     clean:
       development: ['build']
 
     requirejs:
       options:
         baseUrl: 'lib'
-        wrap: false
       
       full:
         options:
