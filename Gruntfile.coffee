@@ -20,6 +20,7 @@ module.exports = (grunt) ->
             'Flip'
             'adapters/LocalStorage'
             'adapters/MemStorage'
+            'adapters/FileStorage'
           ]
           paths:
             'almond': '../node_modules/almond/almond'
@@ -33,6 +34,7 @@ module.exports = (grunt) ->
             'Flip'
             'adapters/LocalStorage'
             'adapters/MemStorage'
+            'adapters/FileStorage'
           ]
           insertRequire: ['Flip']
           generateSourceMaps: true

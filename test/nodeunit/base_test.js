@@ -1,55 +1,56 @@
+require('../../lib/adapters/FileStorage');
 require('../../lib/adapters/MemStorage');
 var Flip = require('../../lib/Flip');
+
+var db;
 
 exports.group1 = {
   setUp: function(callback) {
     var self = this;
-    this.db = Flip.connect('BaseTest', {}, function(err, db) {
-      self.db = db;
-      db.collection('coll');
+    Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true}, function(err, _db) {
+      db = _db;
 
       callback();
     });
   },
   tearDown: function(callback) {
-    if (this.db) this.db.dropDatabase();
-    callback();
+    db.dropDatabase(callback);
   },
   testInsert: function(test) {
-    var self = this;
 
     test.expect(2);
-    self.db.coll.insert({a:'a'}, function(err, ob) {
+    db.collection('coll1');
+    db.coll1.insert({a:'a'}, function(err, ob) {
       test.ok(!err, 'Error');
       test.equal(ob.a, 'a');
       test.done();
     });
   },
   testBasicFind: function(test) {
-    var self = this;
 
     var a = {a:'a', c:'c'};
     var b = {b:'b'};
 
     test.expect(11);
-    self.db.coll.insert(a, function(err, result) {
+    db.collection('coll2');
+    db.coll2.insert(a, function(err, result) {
       test.ok(!err, 'Error');
 
-      self.db.coll.insert(b, function(err, result) {
+      db.coll2.insert(b, function(err, result) {
         test.ok(!err, 'Error');
 
-        self.db.coll.find({a:'a'}, function(err, list) {
+        db.coll2.find({a:'a'}, function(err, list) {
           test.ok(!err, 'Error');
 
           test.equal(list.length, 1, 'Result list length');
           test.deepEqual(list, [a], 'List equals');
 
-          self.db.coll.find({a:{$ne:'a'}}, function(err, list) {
+          db.coll2.find({a:{$ne:'a'}}, function(err, list) {
             test.ok(!err, 'Error');
 
             test.equal(list.length, 1, 'Result list length');
             test.deepEqual(list, [b], 'List equals');
-            self.db.coll.find({a:'a', c:'c'}, function(err, list) {
+            db.coll2.find({a:'a', c:'c'}, function(err, list) {
               test.ok(!err, 'Error');
 
               test.equal(list.length, 1, 'Result list length');
@@ -65,30 +66,31 @@ exports.group1 = {
     var self = this;
 
     test.expect(14);
-    self.db.coll.insert({a:'a', val:1}, function(err, result) {
+    db.collection('coll3');
+    db.coll3.insert({a:'a', val:1}, function(err, result) {
       test.ok(!err, 'Error');
 
-      self.db.coll.insert({b:'b', val:0}, function(err, result) {
+      db.coll3.insert({b:'b', val:0}, function(err, result) {
         test.ok(!err, 'Error');
 
-        self.db.coll.find({val:{$gt:0}}, function(err, list) {
+        db.coll3.find({val:{$gt:0}}, function(err, list) {
           test.ok(!err, 'Error');
 
           test.equal(list.length, 1, '$gt compare result length');
           test.deepEqual(list, [{a:'a', val:1, _id:list[0]._id}], '$gt compare result');
 
-          self.db.coll.find({val:{$gte:1}}, function(err, list) {
+          db.coll3.find({val:{$gte:1}}, function(err, list) {
             test.ok(!err, 'Error');
 
             test.equal(list.length, 1, '$gte compare result length');
             test.deepEqual(list, [{a:'a', val:1, _id:list[0]._id}], '$gte compare result');
 
-            self.db.coll.find({val:{$lt:1}}, function(err, list) {
+            db.coll3.find({val:{$lt:1}}, function(err, list) {
               test.ok(!err, 'Error');
 
               test.equal(list.length, 1, '$lt compare result length');
               test.deepEqual(list, [{b:'b', val:0, _id:list[0]._id}], '$lt compare result');
-              self.db.coll.find({val:{$lte:0}}, function(err, list) {
+              db.coll3.find({val:{$lte:0}}, function(err, list) {
                 test.ok(!err, 'Error');
 
                 test.equal(list.length, 1, '$lte compare result length');
@@ -109,19 +111,20 @@ exports.group1 = {
     var b = {b:'b', val:['b','c']};
 
     test.expect(8);
-    self.db.coll.insert(a, function(err, result) {
+    db.collection('coll4');
+    db.coll4.insert(a, function(err, result) {
       test.ok(!err, 'Error');
 
-      self.db.coll.insert(b, function(err, result) {
+      db.coll4.insert(b, function(err, result) {
         test.ok(!err, 'Error');
 
-        self.db.coll.find({val:{$in:['a']}}, function(err, list) {
+        db.coll4.find({val:{$in:['a']}}, function(err, list) {
           test.ok(!err, 'Error');
 
           test.equal(list.length, 1, '$in compare result length');
           test.deepEqual(list, [a], '$in compare result');
 
-          self.db.coll.find({val:{$nin:['a']}}, function(err, list) {
+          db.coll4.find({val:{$nin:['a']}}, function(err, list) {
             test.ok(!err, 'Error');
 
             test.equal(list.length, 1, '$nin compare result length');
