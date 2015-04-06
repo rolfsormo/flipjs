@@ -1,4 +1,3 @@
-
 /*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
 
 (function (root, factory) {
@@ -110,11 +109,16 @@ define("Flip", function(){});
 
     // "Non-statics"
     KeyValueAdapter.prototype.connect = function(dbName, next) {
+      var self = this;
       this.dbName = dbName;
-      this.system = adapter.get('system') || {};
-      this.system.collections = this.system.collections || {};
-      // TODO: load system from db.
-      next(undefined, this);
+      adapter.init(function() {
+        adapter.get('system', function(system) {
+          self.system = system || {};
+
+          self.system.collections = self.system.collections || {};
+          next(undefined, self);
+        });
+      });
     };
     function hasCollectionKey(collections, key) {
       for(var k in collections) if (collections[k].key === key) return true;
@@ -124,10 +128,10 @@ define("Flip", function(){});
       var kva = this;
       var sys = this.system.collections[collection] || {};
 
-      sys.key = sys.key || (this.dbName.substring(0,2) + collection.substring(0,2));
+      var key = sys.key = sys.key || (this.dbName.substring(0,2) + collection.substring(0,2));
       var i = 0;
       while (hasCollectionKey(this.system.collections, sys.key)) {
-        sys.key = sys.key + i;
+        sys.key = key + i;
         i++;
       }
 
@@ -135,28 +139,101 @@ define("Flip", function(){});
       }
       KVACollection.prototype.find = function(criteria, next) {
         var matcher = new MongoMatcher(criteria);
-        var ids = adapter.keys(kva.dbName, collection);
-        var res = [];
-        for(var i = 0; i < ids.length; i++) {
-          var v = adapter.get(kva.dbName, collection, ids[i]);
-          var ob = JSON.parse(v);
-          if (matcher.match(ob)) res.push(ob);
-        }
-        if (next) next(undefined, res);
+        adapter.keys(function(err, keys) {
+          if (err) return next(err);
+
+          var res = [];
+
+          function handle(err, json) {
+            if (err) return next(err);
+
+            if (json) {
+              var ob = JSON.parse(json);
+              console.log(' ============= MATCHING', criteria, 'to', ob);
+              if (matcher.match(ob)) {
+                res.push(ob);
+              }
+              console.log('----');
+            }
+
+            active--;
+            if (!active) {
+              console.log('res', res);
+              next(undefined, res);
+            }
+          }
+
+          var active = 1;
+          for(var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var r = key.split('_');
+            console.log(sys.key, r);
+            if (r.length == 2 && sys.key === r[0]) {
+              active++;
+              adapter.get(key, handle);
+            }
+          }
+          handle();
+        });
       };
       KVACollection.prototype.insert = function(ob, next) {
-        ob._id = ob._id || Flip.generateId();
-        adapter.set(kva.dbName, collection, ob._id, JSON.stringify(ob));
-        if (next) next(undefined, ob);
+        if (!ob._id) ob._id = Flip.generateId();
+
+        var key = sys.key + '_' + ob._id;
+        adapter.set(key, JSON.stringify(ob), function(err, val) {
+          next(err, ob);
+        });
       };
+
       KVACollection.prototype.update = function(ob, next) {
-        adapter.set(kva.dbName, collection, ob._id, JSON.stringify(ob));
-        if (next) next(undefined, ob);
+        adapter.set(kva.dbName, collection, ob._id, JSON.stringify(ob), function(err, val) {
+          next(err, ob);
+        });
       };
+
       KVACollection.prototype.remove = function(criteria, next) {
         this.find(criteria, function(err, list) {
-          for(var i = 0; i < list.length; i++) adapter.remove(kva.dbName, collection, list[i]._id);
-          if (next) next();
+          if (err) return next(err);
+          if (!list.length) return next();
+
+          function handler(err) {
+            if (err) return next(err);
+
+            active--;
+            if (!active) next();
+          }
+
+          var active = 1;
+          for(var i = 0; i < list.length; i++) {
+            var key = sys.key + '_' + list[i]._id;
+            active++;
+            adapter.remove(key, handler);
+          }
+          handle();
+        });
+      };
+
+      KVACollection.prototype.drop = function(next) {
+        adapter.keys(function(err, keys) {
+          if (err) return next(err);
+
+          function handle(err) {
+            if (err) return next(err);
+            active--;
+            if (!active) next();
+          }
+
+          var active = 1;
+          for(var i = 0; i < keys.length; i++) {
+            var r = keys[i].split('_');
+            console.log('r', r);
+
+            if (r[0] === sys.key) {
+              active++;
+              adapter.remove(r[1], handle);
+            }
+          }
+          handle();
         });
       };
       this[collection] = new KVACollection();
@@ -164,8 +241,44 @@ define("Flip", function(){});
     };
 
     KeyValueAdapter.prototype.dropDatabase = function(next) {
-      adapter.dropDatabase(this.dbName);
-      if (next) next();
+      console.log('===================== DROPPING DATABASE', this.dbName);
+      adapter.keys(function(err, keys) {
+        function handle(err) {
+          if (err) return next(err);
+          active--;
+          if (!active) next();
+        }
+
+        var active = 1;
+        for(var i = 0; i < keys.length; i++) adapter.remove(keys[i], handle);
+        handle();
+      });
+
+      // var colls = [];
+      // for(var c in this.system.collections) {
+      //   colls.push(this.system.collections[c].key);
+      // }
+
+      // adapter.keys(function(err, keys) {
+      //   function handle(err) {
+      //     if (err) return next(err);
+
+      //     active--;
+      //     if (!active) {
+      //       // Also remove system.
+      //       adapter.remove('system', next);
+      //     }
+      //   }
+      //   var active = 1;
+      //   for(var i = 0; i < keys.length; i++) {
+      //     var r = keys[i].split('_');
+      //     if (colls.indexOf(r[0]) !== -1) {
+      //       active++;
+      //       adapter.remove(r[1], handler);
+      //     }
+      //   }
+      //   handle();
+      // });
     };
     KeyValueAdapter.prototype.toString = function()  {
       return "KeyValueAdapter::" + adapter.adapterName + '//' + this.dbName;
@@ -195,7 +308,7 @@ define("KeyValueAdapter", function(){});
      factory(root.Flip, root.KeyValueAdapter);
   }
 }(this, function (Flip, KeyValueAdapter) {
-  var debug = true;
+  var debug = false;
 
   Flip.addAdapter(KeyValueAdapter({
     adapterName: 'LocalStorage',
@@ -206,42 +319,28 @@ define("KeyValueAdapter", function(){});
         return false;
       }
     },
-    keys: function(db, collection) {
+    init: function(next) {
+      next();
+    },
+    keys: function(next) {
+      if (debug) console.log('-> KEYS');
       var k = [];
-      for(var i = 0; i < localStorage.length; i++) {
-        var r = localStorage.key(i).split('_');
-        if (r[0] === db && r[1] == collection) k.push(r[2]);
-      }
-      return k;
+      for(var i = 0; i < localStorage.length; i++) k.push(localStorage.key(i));
+      next(undefined, k);
     },
-    get: function(db, collection, key) {
-      if (debug) console.log('-> GET', db, collection, key);
-      var o = window.localStorage.getItem(db + '_' + collection + '_' + key);
-      return o;
+    get: function(key, next) {
+      if (debug) console.log('-> GET', key);
+      next(undefined, window.localStorage.getItem(db + '_' + collection + '_' + key));
     },
-    set: function(db, collection, key, value) {
-      if (debug) console.log('-> SET', db, collection, key, value);
-      window.localStorage.setItem(db + '_' + collection + '_' + key, value);
+    set: function(key, value, next) {
+      if (debug) console.log('-> SET', key, value);
+      window.localStorage.setItem(key, value);
+      next(undefined, value);
     },
-    remove: function(db, collection, key) {
-      if (debug) console.log('-> REMOVE', db, collection, key);
-      window.localStorage.removeItem(db + '_' + collection + '_' + key);
-    },
-    dropCollection: function(db, collection) {
-      if (debug) console.log('-> DROP COLLECTION', db, collection);
-      for(var i = 0; i < localStorage.length; i++) {
-        var r = localStorage.key(i).split('_');
-        console.log('r', r);
-        if (r[0] === db && r[1] == collection) localStorage.removeItem(localStorage.key(i));
-      }
-    },
-    dropDatabase: function(db) {
-      if (debug) console.log('-> DROP DB', db);
-      for(var i = 0; i < localStorage.length; i++) {
-        var r = localStorage.key(i).split('_');
-        console.log('r', r);
-        if (r[0] === db) localStorage.removeItem(localStorage.key(i));
-      }
+    remove: function(key, next) {
+      if (debug) console.log('-> REMOVE', key);
+      window.localStorage.removeItem(key);
+      next();
     }
   }));
 }));
@@ -266,7 +365,7 @@ define("adapters/LocalStorage", function(){});
      factory(root.Flip, root.KeyValueAdapter);
   }
 }(this, function (Flip, KeyValueAdapter) {
-  var debug = false;
+  var debug = true;
 
   var ob = {};
   Flip.addAdapter(KeyValueAdapter({
@@ -274,30 +373,27 @@ define("adapters/LocalStorage", function(){});
     detect: function(options) {
       return !options.requirePersistency;
     },
-    keys: function(db, collection) {
-      if (debug) console.log('[ KEYS', db, collection);
-      return (ob[db] && Object.keys(ob[db])) || [];
+    init: function(next) {
+      next();
     },
-    get: function(db, collection, key) {
-      if (debug) console.log('[ GET', db, collection, key);
-      return ob[db] && ob[db][key];
+    keys: function(next) {
+      if (debug) console.log('[ KEYS');
+      console.log('keys', Object.keys(ob));
+      next(undefined, Object.keys(ob));
     },
-    set: function(db, collection, key, value) {
-      if (debug) console.log('[ SET', db, collection, key, value);
-      ob[db] = ob[db] || {};
-      ob[db][key] = value;
+    get: function(key, next) {
+      if (debug) console.log('[ GET', key);
+      next(undefined, ob[key]);
     },
-    remove: function(db, collection, key) {
-      if (debug) console.log('[ REMOVE', db, collection, key);
-      if (ob[db]) delete ob[db][key];
+    set: function(key, value, next) {
+      if (debug) console.log('[ SET', key, value);
+      ob[key] = value;
+      next();
     },
-    dropCollection: function(db, collection) {
-      if (debug) console.log('[ DROP COLLECTION', db, collection);
-      delete ob[db];
-    },
-    dropDatabase: function(db) {
-      if (debug) console.log('[ DROP DB', db);
-      delete ob[db];
+    remove: function(key, next) {
+      if (debug) console.log('[ REMOVE', key);
+      delete ob[key];
+      next();
     }
   }));
 }));
@@ -305,6 +401,89 @@ define("adapters/LocalStorage", function(){});
 
 
 define("adapters/MemStorage", function(){});
+
+/*! Flip.js | (c) 2013 Rolf Sormo | https://github.com/rolfsormo/flipjs */
+
+(function (root, factory) {
+    console.log('loading...');
+  if (typeof define === 'function' && define.amd) {
+    // AMD.
+    throw new Error('FileStorage works only in Node.js');
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    var YAML;
+    try { YAML = require('libyaml'); } catch(e) { }
+    var bson;
+    try { bson = require('bson'); } catch(e) { }
+
+    factory(require('../Flip'), require('../KeyValueAdapter'), YAML, bson, require('fs'));
+  } else {
+    // Browser
+    throw new Error('FileStorage works only in Node.js');
+  }
+}(this, function (Flip, KeyValueAdapter, YAML, bson, fs) {
+  var debug = false;
+
+  Flip.addAdapter(KeyValueAdapter({
+    adapterName: 'FileStorage',
+    detect: function(options) {
+      this.options = options;
+      this.options.directory = this.options.directory || 'db';
+      if (debug) console.log('Allow File Storage: ', options.allowFileStorage);
+      return options.allowFileStorage;
+    },
+    init: function(next) {
+      if (debug) console.log('Creating: ', this.options.directory);
+      fs.mkdir(this.options.directory, function(e) {
+        next();        
+      });
+    },
+    keys: function(next) {
+      if (debug) console.log('[ KEYS');
+
+      fs.readdir(this.options.directory, function(err, files) {
+        if (err) return next(err);
+
+        if (debug) console.log('files', files);
+        next(undefined, files);
+      });
+    },
+    get: function(key, next) {
+      if (debug) console.log('[ GET', key);
+      key = key.replace('/', '_');
+      fs.readFile(this.options.directory + '/' + key, function(err, file) {
+        if (err) return next(err);
+
+        next(undefined, file);
+      });
+    },
+    set: function(key, value, next) {
+      if (debug) console.log('[ SET', key, value);
+      key = key.replace('/', '_');
+      fs.writeFile(this.options.directory + '/' + key, value, function(err) {
+        if (err) return next(err);
+
+        next();
+      });
+    },
+    remove: function(key, next) {
+      if (debug) console.log('[ REMOVE', key);
+      key = key.replace('/', '_');
+      fs.unlink(this.options.directory + '/' + key, function(err) {
+        if (err) return next(err);
+
+        next();
+      });
+    }
+  }));
+}));
+
+
+
+define("adapters/FileStorage", function(){});
+
 
 require(["Flip"]);
 

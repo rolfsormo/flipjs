@@ -4,6 +4,27 @@ var Flip = require('../../lib/Flip');
 
 var db;
 
+// Run a bunch of asynchronous functions in series.
+function series(arr, callback) {
+    if (!callback) callback = function() {};
+    if (!arr.length) return callback();
+
+    var i = 0;
+    var iterate = function() {
+      var fn = arr[i++];
+
+      fn(function(err) {
+        if (err) return callback(err);
+        else if (i >= arr.length) {
+          callback();
+        } else {
+          iterate();
+        }
+      });
+    };
+    iterate();
+}
+
 exports.group1 = {
   setUp: function(callback) {
     var self = this;
@@ -66,6 +87,7 @@ exports.group1 = {
     var self = this;
 
     test.expect(14);
+
     db.collection('coll3');
     db.coll3.insert({a:'a', val:1}, function(err, result) {
       test.ok(!err, 'Error');
@@ -95,6 +117,7 @@ exports.group1 = {
 
                 test.equal(list.length, 1, '$lte compare result length');
                 test.deepEqual(list, [{b:'b', val:0, _id:list[0]._id}], '$lte compare result');
+
                 test.done();
               });
             });
@@ -135,6 +158,90 @@ exports.group1 = {
         });
       });
     });
-  }
+  },
 
+  testGlobalOperators: function(test) {
+    var self = this;
+
+    var a = {a:'a', c:'c', d:'d'};
+    var b = {b:'b', c:'c', d:'d'};
+
+
+    test.expect(13);
+    series([
+      //
+      // Initialize.
+      //
+      function openColl5(callback) {
+        db.collection('coll5');
+        callback();
+      },
+      function insertA(callback) {
+        db.coll5.insert(a, callback);
+      },
+      function insertB(callback) {
+        db.coll5.insert(b, callback);
+      },
+
+      //
+      // $or
+      //
+      function testOrBoth(callback) {
+        db.coll5.find({$or:[{a:'a'}, {b:'b'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 2, '$or compare result length');
+
+          callback(err);
+        });
+      },
+      function testOrNeither(callback) {
+        db.coll5.find({$or:[{a:'b'}, {b:'a'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 0, '$or compare result length');
+
+          callback(err);
+        });
+      },
+      function testOrA(callback) {
+        db.coll5.find({$or:[{a:'a'}, {b:'a'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 1, '$or compare result length');
+
+          callback(err);
+        });
+      },
+
+      //
+      // $and
+      //
+      function testAndBoth(callback) {
+        db.coll5.find({$and:[{c:'c'}, {d:'d'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 2, '$and compare result length');
+
+          callback(err);
+        });
+      },
+      function testAndNeither(callback) {
+        db.coll5.find({$and:[{a:'b'}, {c:'c'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 0, '$and compare result length');
+
+          callback(err);
+        });
+      },
+      function testAndA(callback) {
+        db.coll5.find({$and:[{a:'a'}, {c:'c'}]}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 1, '$and compare result length');
+
+          callback(err);
+        });
+      },
+    ], function(err) {
+      test.ok(!err, 'Error!');
+      test.done();
+    });
+
+  },
 };
