@@ -1,6 +1,6 @@
 # Flip.js
 
-Flip.js is a library that offers a mongo-style database layer on top of many different kinds of
+Flip.js is a database abstraction library that offers a mongo-style database layer on top of many different kinds of
 database providers. It works in the browser with all the recent (and not so recent) db providers,
 but it also works within Node and can wrap for example MySQL and other databases.
 
