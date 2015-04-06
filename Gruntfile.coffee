@@ -75,7 +75,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'test', [
     'clean'
     'jshint'
-    'requirejs:development'
+    'requirejs:full_debug'
     'nodeunit'
     'qunit'
   ]

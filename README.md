@@ -159,6 +159,15 @@ The project is not there yet. A few steps have to be taken for this project to b
 - Make browser tests, run them with some headless unit test framework
 - Push to NPM and bower
 
+# Running tests
+
+  1. Install qunit `npm install -g qunit`
+  1. Run `grunt test`
+
+# Building and publishing
+
+  1. Build `grunt build`
+  1. Publish `npm publish`
 
 # License
 
