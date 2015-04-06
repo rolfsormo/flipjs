@@ -107,11 +107,11 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
   * $nin
   * $or
   * $and
+  * $not
 
 ### To do
 
 * Specify Conditions Using Query Operators
-  * $not
   * $nor
   * $exists
   * $type

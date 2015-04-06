@@ -167,7 +167,7 @@ exports.group1 = {
     var b = {b:'b', c:'c', d:'d'};
 
 
-    test.expect(13);
+    test.expect(19);
     series([
       //
       // Initialize.
@@ -234,6 +234,34 @@ exports.group1 = {
         db.coll5.find({$and:[{a:'a'}, {c:'c'}]}, function(err, list) {
           test.ok(!err, 'Error');
           test.equal(list.length, 1, '$and compare result length');
+
+          callback(err);
+        });
+      },
+
+      //
+      // $not
+      //
+      function testNotOne(callback) {
+        db.coll5.find({a:{$not:'a'}}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 1, '$not compare result length');
+
+          callback(err);
+        });
+      },
+      function testNotNone(callback) {
+        db.coll5.find({c:{$not:'c'}}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 0, '$not compare result length');
+
+          callback(err);
+        });
+      },
+      function testNotAll(callback) {
+        db.coll5.find({c:{$not:'b'}}, function(err, list) {
+          test.ok(!err, 'Error');
+          test.equal(list.length, 2, '$not compare result length');
 
           callback(err);
         });
