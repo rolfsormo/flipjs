@@ -105,12 +105,12 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
   * $lte
   * $ne
   * $nin
+  * $or
+  * $and
 
 ### To do
 
 * Specify Conditions Using Query Operators
-  * $or
-  * $and
   * $not
   * $nor
   * $exists
