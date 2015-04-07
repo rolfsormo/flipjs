@@ -71,6 +71,9 @@ done like this:
 - *maxSize*: Specify the maximum database size (if supported by the adapter).
 - *keyBase*: The unique key generator number base (16 for hex); default 32.
 - *keyLength*: The unique key generator key length in characters; default 3.
+- *allowYAML*: If this is set to `false` the KeyValueAdapters will not store data in YAML format, even if the libyaml package would be available in Node.js.
+- *allowBson*: If this is set to `false` the KeyValueAdapters will not store data in bson format, even if the bson package would be available in Node.js.
+- *sep*: The character used to separate the db and collection name from the object id in KeyValueAdapters; default `#`.
 
 ### LocalStorage
 
@@ -78,9 +81,15 @@ No options.
 
 ### MemStorage
 
-MemStorage is a very fast but not persistent storage option. It will be available in all environments.
+MemStorage is a very fast but **not persistent** (ie. not stored over restarts) storage option. It is available in all environments.
 
 - *requirePersistency*: If this option is set to `true` then MemStorage will not be detected.
+
+### FileStorage
+
+FileStorage is a simple persistent storage option for Node.js. It stores all the objects in files. Depending on the availability of YAML and/or bson libraries affects on the file format (and in some extent, speed).
+
+- *allowFileStorage*: If this option is set to `false` then FileStorage will not be detected.
 
 ## Supported Platforms
 
