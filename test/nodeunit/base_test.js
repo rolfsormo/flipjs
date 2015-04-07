@@ -28,7 +28,7 @@ function series(arr, callback) {
 exports.group1 = {
   setUp: function(callback) {
     var self = this;
-    Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true}, function(err, _db) {
+    Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true, enforceModel:true}, function(err, _db) {
       db = _db;
 
       callback();
@@ -357,6 +357,53 @@ exports.group1 = {
           test.equal(list.length, 2, '$not compare result length');
 
           callback(err);
+        });
+      },
+    ], function(err) {
+      test.ok(!err, 'Error!');
+      test.done();
+    });
+  },
+
+
+  testModels: function(test) {
+    var self = this;
+
+    var model = {
+      s: String,
+      n: Number,
+      o: Object
+    };
+    var coll6;
+
+    test.expect(4);
+    series([
+      //
+      // Initialize.
+      //
+      function openColl6(callback) {
+        db.collection('coll6', model, function(err, coll) {
+          test.ok(!err, 'Error');
+          coll6 = coll;
+          callback();
+        });
+      },
+      function insertA(callback) {
+        db.coll6.insert({s:'a', n:1, o:{x:1, y:2}}, function(err, ob) {
+          if (err) return callback(err);
+
+          test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, _id:ob._id}, 'model insert a result');
+
+          callback();
+        });
+      },
+      function insertB(callback) {
+        db.coll6.insert({s:'b', n:'2', o:'{x:1, y:2}', z:99}, function(err, ob) {
+          if (err) return callback(err);
+
+          test.deepEqual(ob, {s:'b', n:'2', _id:ob._id}, 'model insert b result');
+
+          callback();
         });
       },
     ], function(err) {

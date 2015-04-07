@@ -114,6 +114,7 @@ define("Flip", function(){});
       this.options.sep = this.options.sep || '#';
       this.options.keyBase = this.options.keyBase || 32;
       this.options.keyLength = this.options.keyLength || 3;
+      // this.options.enforceModel = this.options.enforceModel || false;
 
       if (YAML && this.options.allowYAML !== false) {
         if (debug) console.log('* YAMLing');
@@ -159,12 +160,15 @@ define("Flip", function(){});
       for(var k in collections) if (collections[k].key === key) return true;
     }
 
-    KeyValueAdapter.prototype.collection = function(collection, options, next) {
+    KeyValueAdapter.prototype.collection = function(collection, model, next) {
 
-      if (typeof options === 'function') {
-        next = options;
-        options = undefined;
+      if (typeof model === 'function') {
+        next = model;
+        model = undefined;
       }
+
+      // Make sure we have an _id always.
+      if (model && !model._id) model._id = String;
 
       var kva = this;
       var sys = this.system.collections[collection] || {};
@@ -172,6 +176,34 @@ define("Flip", function(){});
       var key = sys.key = sys.key || (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
       while (hasCollectionKey(this.system.collections, sys.key)) {
         sys.key = (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
+      }
+
+      function enforceModel(ob) {
+        var key;
+
+        if (!model) return;
+
+        // Clear extras.
+        for(key in ob) {
+          if (!model[key]) delete ob[key];
+        }
+        // Format values correctly.
+        for(key in model) {
+          switch(model[key]) {
+            case String:
+              ob[key] = String(ob[key]);
+              break;
+            case Number:
+              ob[key] = Number(ob[key]);
+              break;
+            case Object:
+              // ob = ob[key].toString();
+              if (typeof ob[key] !== 'object') delete ob[key];
+              break;
+            default:
+              break;
+          }
+        }
       }
 
       function KVACollection(options, adapter) {
@@ -225,12 +257,18 @@ define("Flip", function(){});
 
         var self = this;
         var key = sys.key + this.options.sep + ob._id;
+
+        if(this.options.enforceModel) enforceModel(ob);
+
         adapter.set(key, self.adapter.serialize(ob), function(err, val) {
           next(err, ob);
         });
       };
 
       KVACollection.prototype.update = function(ob, next) {
+
+        if(this.options.enforceModel) enforceModel(ob);
+
         adapter.set(kva.dbName, collection, ob._id, this.adapter.serialize(ob), function(err, val) {
           next(err, ob);
         });
