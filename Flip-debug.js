@@ -94,6 +94,7 @@ define("Flip", function(){});
 
     function KeyValueAdapter(options) {
       this.options = options;
+      this.options.sep = this.options.sep || '#';
     }
 
     // "Statics"
@@ -116,6 +117,7 @@ define("Flip", function(){});
           self.system = system || {};
 
           self.system.collections = self.system.collections || {};
+          self.system.key = self.system.key || Flip.generateId().substring(0,2);
           next(undefined, self);
         });
       });
@@ -128,16 +130,16 @@ define("Flip", function(){});
       var kva = this;
       var sys = this.system.collections[collection] || {};
 
-      var key = sys.key = sys.key || (this.dbName.substring(0,2) + collection.substring(0,2));
-      var i = 0;
+      var key = sys.key = sys.key || (this.system.key + Flip.generateId().substring(0,2));
       while (hasCollectionKey(this.system.collections, sys.key)) {
-        sys.key = key + i;
-        i++;
+        sys.key = (this.system.key + Flip.generateId().substring(0,2));
       }
 
-      function KVACollection() {
+      function KVACollection(options) {
+        this.options = options;
       }
       KVACollection.prototype.find = function(criteria, next) {
+        var self = this;
         var matcher = new MongoMatcher(criteria);
         adapter.keys(function(err, keys) {
           if (err) return next(err);
@@ -166,7 +168,7 @@ define("Flip", function(){});
           var active = 1;
           for(var i = 0; i < keys.length; i++) {
             var key = keys[i];
-            var r = key.split('_');
+            var r = key.split(self.options.sep);
             console.log(sys.key, r);
             if (r.length == 2 && sys.key === r[0]) {
               active++;
@@ -179,7 +181,7 @@ define("Flip", function(){});
       KVACollection.prototype.insert = function(ob, next) {
         if (!ob._id) ob._id = Flip.generateId();
 
-        var key = sys.key + '_' + ob._id;
+        var key = sys.key + this.options.sep + ob._id;
         adapter.set(key, JSON.stringify(ob), function(err, val) {
           next(err, ob);
         });
@@ -192,6 +194,7 @@ define("Flip", function(){});
       };
 
       KVACollection.prototype.remove = function(criteria, next) {
+        var self = this;
         this.find(criteria, function(err, list) {
           if (err) return next(err);
           if (!list.length) return next();
@@ -205,7 +208,7 @@ define("Flip", function(){});
 
           var active = 1;
           for(var i = 0; i < list.length; i++) {
-            var key = sys.key + '_' + list[i]._id;
+            var key = sys.key + self.options.sep + list[i]._id;
             active++;
             adapter.remove(key, handler);
           }
@@ -214,6 +217,7 @@ define("Flip", function(){});
       };
 
       KVACollection.prototype.drop = function(next) {
+        var self = this;
         adapter.keys(function(err, keys) {
           if (err) return next(err);
 
@@ -225,7 +229,7 @@ define("Flip", function(){});
 
           var active = 1;
           for(var i = 0; i < keys.length; i++) {
-            var r = keys[i].split('_');
+            var r = keys[i].split(self.options.sep);
             console.log('r', r);
 
             if (r[0] === sys.key) {
@@ -236,11 +240,12 @@ define("Flip", function(){});
           handle();
         });
       };
-      this[collection] = new KVACollection();
+      this[collection] = new KVACollection(this.options);
       return this[collection];
     };
 
     KeyValueAdapter.prototype.dropDatabase = function(next) {
+      var self = this;
       console.log('===================== DROPPING DATABASE', this.dbName);
       adapter.keys(function(err, keys) {
         function handle(err) {
@@ -271,7 +276,7 @@ define("Flip", function(){});
       //   }
       //   var active = 1;
       //   for(var i = 0; i < keys.length; i++) {
-      //     var r = keys[i].split('_');
+      //     var r = keys[i].split(this.options.sep);
       //     if (colls.indexOf(r[0]) !== -1) {
       //       active++;
       //       adapter.remove(r[1], handler);
