@@ -35,7 +35,8 @@ exports.group1 = {
     });
   },
   tearDown: function(callback) {
-    db.dropDatabase(callback);
+    // db.dropDatabase(callback);
+    callback();
   },
   testInsert: function(test) {
 

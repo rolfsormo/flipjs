@@ -83,12 +83,23 @@ define("Flip", function(){});
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like enviroments that support module.exports,
     // like Node.
-    module.exports = factory(require('./Flip'), require('./MongoMatcher'));
+    var YAML;
+    try { YAML = require('libyaml'); } catch(e) { }
+    var bson;
+    try { bson = require('bson'); } catch(e) { }
+
+    module.exports = factory(require('./Flip'), require('./MongoMatcher'), YAML, bson);
   } else {
     // Browser globals (root is window)
     root[moduleName] = factory(root.Flip, root.MongoMatcher);
   }
-}(this, function (Flip, MongoMatcher) {
+}(this, function (Flip, MongoMatcher, YAML, bson) {
+  var debug = true;
+
+  if (debug) {
+    if (!YAML) console.log('YAML not available');
+    if (!bson) console.log('bson not available');
+  }
 
   function shortKey(base, length) {
     base = base || 32;
@@ -103,6 +114,20 @@ define("Flip", function(){});
       this.options.sep = this.options.sep || '#';
       this.options.keyBase = this.options.keyBase || 32;
       this.options.keyLength = this.options.keyLength || 3;
+
+      if (YAML && this.options.allowYAML !== false) {
+        if (debug) console.log('* YAMLing');
+        this.serialize = YAML.stringify;
+        this.deserialize = function(data) { return (YAML.parse(data.toString()) || [{}])[0]; };
+      } else if (bson && this.options.allowBson !== false) {
+        if (debug) console.log('* bsoning');
+        this.serialize = function(doc) { return bson.BSONPure.BSON.serialize(doc, false, true, false); };
+        this.deserialize = function(str) { return bson.BSONPure.BSON.deserialize(str); };
+      } else {
+        if (debug) console.log('* JSONing');
+        this.serialize = JSON.stringify;
+        this.deserialize = JSON.parse;
+      }
     }
 
     // "Statics"
@@ -143,8 +168,9 @@ define("Flip", function(){});
         sys.key = (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
       }
 
-      function KVACollection(options) {
+      function KVACollection(options, adapter) {
         this.options = options;
+        this.adapter = adapter;
       }
       KVACollection.prototype.find = function(criteria, next) {
         var self = this;
@@ -154,11 +180,13 @@ define("Flip", function(){});
 
           var res = [];
 
-          function handle(err, json) {
+          function handle(err, data) {
             if (err) return next(err);
 
-            if (json) {
-              var ob = JSON.parse(json);
+            if (data) {
+              // console.log('data', typeof data, data.length, data.toString());
+              var ob = self.adapter.deserialize(data);
+              // var ob = data;
               console.log(' ============= MATCHING', criteria, 'to', ob);
               if (matcher.match(ob)) {
                 res.push(ob);
@@ -189,14 +217,15 @@ define("Flip", function(){});
       KVACollection.prototype.insert = function(ob, next) {
         if (!ob._id) ob._id = Flip.generateId();
 
+        var self = this;
         var key = sys.key + this.options.sep + ob._id;
-        adapter.set(key, JSON.stringify(ob), function(err, val) {
+        adapter.set(key, self.adapter.serialize(ob), function(err, val) {
           next(err, ob);
         });
       };
 
       KVACollection.prototype.update = function(ob, next) {
-        adapter.set(kva.dbName, collection, ob._id, JSON.stringify(ob), function(err, val) {
+        adapter.set(kva.dbName, collection, ob._id, this.adapter.serialize(ob), function(err, val) {
           next(err, ob);
         });
       };
@@ -248,7 +277,7 @@ define("Flip", function(){});
           handle();
         });
       };
-      this[collection] = new KVACollection(this.options);
+      this[collection] = new KVACollection(this.options, this);
       return this[collection];
     };
 
@@ -426,17 +455,12 @@ define("adapters/MemStorage", function(){});
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like enviroments that support module.exports,
     // like Node.
-    var YAML;
-    try { YAML = require('libyaml'); } catch(e) { }
-    var bson;
-    try { bson = require('bson'); } catch(e) { }
-
-    factory(require('../Flip'), require('../KeyValueAdapter'), YAML, bson, require('fs'));
+    factory(require('../Flip'), require('../KeyValueAdapter'), require('fs'));
   } else {
     // Browser
     throw new Error('FileStorage works only in Node.js');
   }
-}(this, function (Flip, KeyValueAdapter, YAML, bson, fs) {
+}(this, function (Flip, KeyValueAdapter, fs) {
   var debug = false;
 
   Flip.addAdapter(KeyValueAdapter({
@@ -445,12 +469,12 @@ define("adapters/MemStorage", function(){});
       this.options = options;
       this.options.directory = this.options.directory || 'db';
       if (debug) console.log('Allow File Storage: ', options.allowFileStorage);
-      return options.allowFileStorage;
+      return options.allowFileStorage && typeof window === 'undefined';
     },
     init: function(next) {
       if (debug) console.log('Creating: ', this.options.directory);
       fs.mkdir(this.options.directory, function(e) {
-        next();        
+        next();
       });
     },
     keys: function(next) {

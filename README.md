@@ -164,6 +164,9 @@ The project is not there yet. A few steps have to be taken for this project to b
   1. Install qunit `npm install -g qunit`
   1. Run `grunt test`
 
+  - To test YAML, do: `npm install libyaml`
+  - To test bson, first remove libyaml, then do: `npm install bson`
+
 # Building and publishing
 
   1. Build `grunt build`
