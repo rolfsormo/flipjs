@@ -90,11 +90,19 @@ define("Flip", function(){});
   }
 }(this, function (Flip, MongoMatcher) {
 
+  function shortKey(base, length) {
+    base = base || 32;
+    length = length || 3;
+    return Math.floor(Math.pow(base,length-1) + Math.random() * (Math.pow(base,length) - Math.pow(base,length-1))).toString(base);
+  }
+
   return function(adapter) {
 
     function KeyValueAdapter(options) {
       this.options = options;
       this.options.sep = this.options.sep || '#';
+      this.options.keyBase = this.options.keyBase || 32;
+      this.options.keyLength = this.options.keyLength || 3;
     }
 
     // "Statics"
@@ -105,7 +113,7 @@ define("Flip", function(){});
     };
 
     KeyValueAdapter.toString = function()  {
-      return "KeyValueAdapter::" + adapter.adapterName;
+      return "KeyValueAdapter#" + adapter.adapterName;
     };
 
     // "Non-statics"
@@ -117,7 +125,7 @@ define("Flip", function(){});
           self.system = system || {};
 
           self.system.collections = self.system.collections || {};
-          self.system.key = self.system.key || Flip.generateId().substring(0,2);
+          self.system.key = self.system.key || shortKey(self.options.keyBase, self.options.keyLength);
           next(undefined, self);
         });
       });
@@ -130,9 +138,9 @@ define("Flip", function(){});
       var kva = this;
       var sys = this.system.collections[collection] || {};
 
-      var key = sys.key = sys.key || (this.system.key + Flip.generateId().substring(0,2));
+      var key = sys.key = sys.key || (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
       while (hasCollectionKey(this.system.collections, sys.key)) {
-        sys.key = (this.system.key + Flip.generateId().substring(0,2));
+        sys.key = (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
       }
 
       function KVACollection(options) {
@@ -286,7 +294,7 @@ define("Flip", function(){});
       // });
     };
     KeyValueAdapter.prototype.toString = function()  {
-      return "KeyValueAdapter::" + adapter.adapterName + '//' + this.dbName;
+      return "KeyValueAdapter#" + adapter.adapterName + '/' + this.dbName;
     };
 
     return KeyValueAdapter;
