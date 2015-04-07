@@ -68,9 +68,9 @@ done like this:
 
 ### Common options
 
-#### maxSize
-
-Specify the maximum database size (if supported by the adapter).
+- *maxSize*: Specify the maximum database size (if supported by the adapter).
+- *keyBase*: The unique key generator number base (16 for hex); default 32.
+- *keyLength*: The unique key generator key length in characters; default 3.
 
 ### LocalStorage
 
@@ -80,9 +80,7 @@ No options.
 
 MemStorage is a very fast but not persistent storage option. It will be available in all environments.
 
-#### requirePersistency
-
-If this option is set to `true` then MemStorage will not be detected.
+- *requirePersistency*: If this option is set to `true` then MemStorage will not be detected.
 
 ## Supported Platforms
 
