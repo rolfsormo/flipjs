@@ -159,7 +159,13 @@ define("Flip", function(){});
       for(var k in collections) if (collections[k].key === key) return true;
     }
 
-    KeyValueAdapter.prototype.collection = function(collection, options) {
+    KeyValueAdapter.prototype.collection = function(collection, options, next) {
+
+      if (typeof options === 'function') {
+        next = options;
+        options = undefined;
+      }
+
       var kva = this;
       var sys = this.system.collections[collection] || {};
 
@@ -278,6 +284,7 @@ define("Flip", function(){});
         });
       };
       this[collection] = new KVACollection(this.options, this);
+      if (next) next(undefined, this[collection]);
       return this[collection];
     };
 

@@ -9,8 +9,9 @@ define('Test', ['Flip'], function(Flip) {
       stop();
       Flip.connect('Test', {}, function(err, _db) {
         db = _db;
-        db.collection('coll');
-        start();
+        db.collection('coll', function(err, coll) {
+          start();
+        });
       });
     },
     tearDown: function() {
