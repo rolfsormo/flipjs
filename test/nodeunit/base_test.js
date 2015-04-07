@@ -56,85 +56,138 @@ exports.group1 = {
 
     var a = {a:'a', c:'c'};
     var b = {b:'b'};
+    var coll2;
 
-    test.expect(12);
-    db.collection('coll2', function(err, coll2) {
-      test.ok(!err, 'Error');
-
-      coll2.insert(a, function(err, result) {
-        test.ok(!err, 'Error');
-
-        coll2.insert(b, function(err, result) {
+    test.expect(11);
+    series([
+      //
+      // Initialize.
+      //
+      function openColl2(callback) {
+        db.collection('coll2', function(err, coll) {
+          coll2 = coll;
+          test.ok(!err, 'Error');
+          callback();
+        });
+      },
+      function insertA(callback) {
+        coll2.insert(a, callback);
+      },
+      function insertB(callback) {
+        coll2.insert(b, callback);
+      },
+      //
+      // find
+      //
+      function testField(callback) {
+        coll2.find({a:'a'}, function(err, list) {
           test.ok(!err, 'Error');
 
-          coll2.find({a:'a'}, function(err, list) {
-            test.ok(!err, 'Error');
-
-            test.equal(list.length, 1, 'Result list length');
-            test.deepEqual(list, [a], 'List equals');
-
-            coll2.find({a:{$ne:'a'}}, function(err, list) {
-              test.ok(!err, 'Error');
-
-              test.equal(list.length, 1, 'Result list length');
-              test.deepEqual(list, [b], 'List equals');
-              coll2.find({a:'a', c:'c'}, function(err, list) {
-                test.ok(!err, 'Error');
-
-                test.equal(list.length, 1, 'Result list length');
-                test.deepEqual(list, [a], 'List equals');
-                test.done();
-              });
-            });
-          });
+          test.equal(list.length, 1, 'Result list length');
+          test.deepEqual(list, [a], 'List equals');
+          callback();
         });
-      });
+      },
+      function testNe(callback) {
+        coll2.find({a:{$ne:'a'}}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, 'Result list length');
+          test.deepEqual(list, [b], 'List equals');
+
+          callback();
+        });
+      },
+      function testTwoFields(callback) {
+        coll2.find({a:'a', c:'c'}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, 'Result list length');
+          test.deepEqual(list, [a], 'List equals');
+          callback();
+        });
+      },
+    ], function(err) {
+      test.ok(!err, 'Error!');
+      test.done();
     });
   },
+
   testNumberComparesFind: function(test) {
     var self = this;
+    var a = {a:'a', val:1};
+    var b = {b:'b', val:0};
+    var coll3;
 
-    test.expect(15);
-
-    db.collection('coll3', function(err, coll3) {
-      test.ok(!err, 'Error');
-
-      coll3.insert({a:'a', val:1}, function(err, result) {
-        test.ok(!err, 'Error');
-
-        coll3.insert({b:'b', val:0}, function(err, result) {
+    test.expect(14);
+    series([
+      //
+      // Initialize.
+      //
+      function openColl3(callback) {
+        db.collection('coll3', function(err, coll) {
+          coll3 = coll;
+          test.ok(!err, 'Error');
+          callback();
+        });
+      },
+      function insertA(callback) {
+        coll3.insert(a, callback);
+      },
+      function insertB(callback) {
+        coll3.insert(b, callback);
+      },
+      //
+      // $gt
+      //
+      function testGt(callback) {
+        coll3.find({val:{$gt:0}}, function(err, list) {
           test.ok(!err, 'Error');
 
-          coll3.find({val:{$gt:0}}, function(err, list) {
-            test.ok(!err, 'Error');
-
-            test.equal(list.length, 1, '$gt compare result length');
-            test.deepEqual(list, [{a:'a', val:1, _id:list[0]._id}], '$gt compare result');
-
-            coll3.find({val:{$gte:1}}, function(err, list) {
-              test.ok(!err, 'Error');
-
-              test.equal(list.length, 1, '$gte compare result length');
-              test.deepEqual(list, [{a:'a', val:1, _id:list[0]._id}], '$gte compare result');
-
-              coll3.find({val:{$lt:1}}, function(err, list) {
-                test.ok(!err, 'Error');
-
-                test.equal(list.length, 1, '$lt compare result length');
-                test.deepEqual(list, [{b:'b', val:0, _id:list[0]._id}], '$lt compare result');
-                coll3.find({val:{$lte:0}}, function(err, list) {
-                  test.ok(!err, 'Error');
-
-                  test.equal(list.length, 1, '$lte compare result length');
-                  test.deepEqual(list, [{b:'b', val:0, _id:list[0]._id}], '$lte compare result');
-
-                  test.done();
-                });
-              });
-            });
-          });
+          test.equal(list.length, 1, '$gt compare result length');
+          test.deepEqual(list, [a], '$gt compare result');
+          callback();
         });
-      });
+      },
+      //
+      // $gte
+      //
+      function testGte(callback) {
+        coll3.find({val:{$gte:1}}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, '$gte compare result length');
+          test.deepEqual(list, [a], '$gte compare result');
+          callback();
+        });
+      },
+      //
+      // $lt
+      //
+      function testLt(callback) {
+        coll3.find({val:{$lt:1}}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, '$lt compare result length');
+          test.deepEqual(list, [b], '$lt compare result');
+          callback();
+        });
+      },
+      //
+      // $lte
+      //
+      function testLte(callback) {
+        coll3.find({val:{$lte:0}}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, '$lte compare result length');
+          test.deepEqual(list, [b], '$lte compare result');
+          callback();
+        });
+      },
+    ], function(err) {
+      test.ok(!err, 'Error!');
+      test.done();
     });
   },
 
@@ -143,34 +196,54 @@ exports.group1 = {
 
     var a = {a:'a', val:['a','c']};
     var b = {b:'b', val:['b','c']};
+    var coll4;
 
-    test.expect(9);
-    db.collection('coll4', function(err, coll4) {
-      test.ok(!err, 'Error');
+    test.expect(8);
+    series([
+      //
+      // Initialize.
+      //
+      function openColl4(callback) {
+        db.collection('coll4', function(err, coll) {
+          test.ok(!err, 'Error');
+          coll4 = coll;
+          callback();
+        });
+      },
+      function insertA(callback) {
+        db.coll4.insert(a, callback);
+      },
+      function insertB(callback) {
+        db.coll4.insert(b, callback);
+      },
 
-      coll4.insert(a, function(err, result) {
-        test.ok(!err, 'Error');
-
-        coll4.insert(b, function(err, result) {
+      //
+      // $in
+      //
+      function testIn(callback) {
+        coll4.find({val:{$in:['a']}}, function(err, list) {
           test.ok(!err, 'Error');
 
-          coll4.find({val:{$in:['a']}}, function(err, list) {
-            test.ok(!err, 'Error');
-
-            test.equal(list.length, 1, '$in compare result length');
-            test.deepEqual(list, [a], '$in compare result');
-
-            coll4.find({val:{$nin:['a']}}, function(err, list) {
-              test.ok(!err, 'Error');
-
-              test.equal(list.length, 1, '$nin compare result length');
-              test.deepEqual(list, [b], '$nin compare result');
-
-              test.done();
-            });
-          });
+          test.equal(list.length, 1, '$in compare result length');
+          test.deepEqual(list, [a], '$in compare result');
+          callback();
         });
-      });
+      },
+      //
+      // $nin
+      //
+      function testNin(callback) {
+        coll4.find({val:{$nin:['a']}}, function(err, list) {
+          test.ok(!err, 'Error');
+
+          test.equal(list.length, 1, '$nin compare result length');
+          test.deepEqual(list, [b], '$nin compare result');
+          callback();
+        });
+      },
+    ], function(err) {
+      test.ok(!err, 'Error!');
+      test.done();
     });
   },
 
