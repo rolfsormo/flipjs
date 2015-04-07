@@ -254,7 +254,7 @@ exports.group1 = {
     var b = {b:'b', c:'c', d:'d'};
     var coll5;
 
-    test.expect(21);
+    test.expect(23);
     series([
       //
       // Initialize.
@@ -325,6 +325,7 @@ exports.group1 = {
         db.coll5.find({$and:[{a:'a'}, {c:'c'}]}, function(err, list) {
           test.ok(!err, 'Error');
           test.equal(list.length, 1, '$and compare result length');
+          test.deepEqual(list, [a], '$and compare result');
 
           callback(err);
         });
@@ -337,6 +338,7 @@ exports.group1 = {
         db.coll5.find({a:{$not:'a'}}, function(err, list) {
           test.ok(!err, 'Error');
           test.equal(list.length, 1, '$not compare result length');
+          test.deepEqual(list, [b], '$not compare result');
 
           callback(err);
         });
