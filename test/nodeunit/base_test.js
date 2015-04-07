@@ -254,7 +254,7 @@ exports.group1 = {
     var b = {b:'b', c:'c', d:'d'};
     var coll5;
 
-    test.expect(20);
+    test.expect(21);
     series([
       //
       // Initialize.
@@ -297,6 +297,7 @@ exports.group1 = {
           test.ok(!err, 'Error');
           test.equal(list.length, 1, '$or compare result length');
 
+          test.deepEqual(list, [a], '$or compare result');
           callback(err);
         });
       },
