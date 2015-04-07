@@ -153,6 +153,7 @@ The project is not there yet. A few steps have to be taken for this project to b
 
 ## TODO
 
+- Support providing mongoose-like models for better SQL db and index creation
 - Make a wiki page with a table with all known browsers and show the default adapter for them (first one detected) and for each adapter if it is supported
 - Support ensureIndex() (when supported; depends on the adapter most likely)
 - Support SQL databases naïvely by storing keys and values there first, but later generate alter tables with all new ensureIndex() calls
