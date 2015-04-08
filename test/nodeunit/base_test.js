@@ -372,7 +372,12 @@ exports.group1 = {
     var schema = {
       s: String,
       n: Number,
-      o: Object
+      o: Object,
+      d: Date,
+      d2: {
+        type: Date,
+        default: Date.now
+      }
     };
     var coll6;
 
@@ -389,10 +394,10 @@ exports.group1 = {
         });
       },
       function insertA(callback) {
-        db.coll6.insert({s:'a', n:1, o:{x:1, y:2}}, function(err, ob) {
+        db.coll6.insert({s:'a', n:1, o:{x:1, y:2}, d:'2015-04-08 0:0:0'}, function(err, ob) {
           if (err) return callback(err);
 
-          test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, _id:ob._id}, 'schema insert a result');
+          test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, d:new Date('2015-04-08 0:0:0'), _id:ob._id, d2:ob.d2}, 'schema insert a result');
 
           callback();
         });
@@ -401,7 +406,7 @@ exports.group1 = {
         db.coll6.insert({s:'b', n:'2', o:'{x:1, y:2}', z:99}, function(err, ob) {
           if (err) return callback(err);
 
-          test.deepEqual(ob, {s:'b', n:'2', _id:ob._id}, 'schema insert b result');
+          test.deepEqual(ob, {s:'b', n:'2', _id:ob._id, d2:ob.d2}, 'schema insert b result');
 
           callback();
         });
