@@ -187,9 +187,12 @@ define("Flip", function(){});
         for(key in ob) {
           if (!model[key]) delete ob[key];
         }
-        // Format values correctly.
+        // Format values correctly, set defaults, etc.
         for(key in model) {
-          switch(model[key]) {
+          if (!model[key].type) {
+            model[key] = { type: model[key] };
+          }
+          switch(model[key].type) {
             case String:
               ob[key] = String(ob[key]);
               break;
