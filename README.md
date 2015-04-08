@@ -166,6 +166,11 @@ The project is not there yet. A few steps have to be taken for this project to b
 - Support SQL databases naïvely by storing keys and values there first, but later generate alter tables with all new ensureIndex() calls
 - Make browser tests, run them with some headless unit test framework
 - Push to NPM and bower
+- flip-cli, that can at least "flip learn <db-url>" and output the options and models to support that (keyvalue db's study the data, sql db's use describe or some such AND study the _extras-field)
+- models: if sql db doesn't have a model (or encounter a field that is not in the model) the field will be saved into a generic _extras -field (json string) that cannot be queried directly, but with the MongoMatcher only after the data has been read to memory (=slow, up to the developer to create the correct model eventually, possibly with "flip learn")
+- add url and urls field to options for supporting multiple cassandra instances, but also possibly eventually replicating to several db's
+- mongo support with native mongodb AND mongoose (can reuse the models directly IF the options are correct)
+- add validateModel-option that only throws exceptions if data is incorrect, not correct it
 
 # Running tests
 
