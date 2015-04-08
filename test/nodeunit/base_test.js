@@ -379,6 +379,7 @@ exports.group1 = {
         default: Date.now
       }
     };
+    var options = { xyz: 'xxx' };
     var coll6;
 
     test.expect(4);
@@ -387,7 +388,7 @@ exports.group1 = {
       // Initialize.
       //
       function openColl6(callback) {
-        db.collection('coll6', schema, function(err, coll) {
+        db.collection('coll6', schema, options, function(err, coll) {
           test.ok(!err, 'Error');
           coll6 = coll;
           callback();

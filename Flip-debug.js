@@ -120,7 +120,7 @@ define("Flip", function(){});
   return function(adapter) {
 
     function KeyValueAdapter(options) {
-      this.options = Object.create(options); // inherit from the db options
+      this.options = options;
       this.options.sep = this.options.sep || '#';
       this.options.keyBase = this.options.keyBase || 32;
       this.options.keyLength = this.options.keyLength || 3;
@@ -182,7 +182,7 @@ define("Flip", function(){});
       }
 
       if (options) extend(this.options, options);
-      
+
       // Make sure we have an _id always.
       if (schema && !schema._id) schema._id = String;
 
@@ -236,7 +236,7 @@ define("Flip", function(){});
       }
 
       function KVACollection(options, adapter) {
-        this.options = options;
+        this.options = Object.create(options); // inherit from the db options
         this.adapter = adapter;
       }
       KVACollection.prototype.find = function(criteria, next) {
