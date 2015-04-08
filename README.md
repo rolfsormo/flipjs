@@ -154,14 +154,14 @@ See [Mongoose Schematypes|http://mongoosejs.com/docs/schematypes.html] for descr
 
 ## Done (for KeyValueAdapter)
 
+* Common features
+  * `default`
 * String
 * Number
-
+* Date
 
 ## Todo
 
-* Common features
-  * `default`
 * String
   * `lowercase`
   * `trim`
