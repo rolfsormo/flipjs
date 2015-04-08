@@ -28,7 +28,7 @@ function series(arr, callback) {
 exports.group1 = {
   setUp: function(callback) {
     var self = this;
-    Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true, enforceModel:true}, function(err, _db) {
+    Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true, enforceSchema:true}, function(err, _db) {
       db = _db;
 
       callback();
@@ -366,10 +366,10 @@ exports.group1 = {
   },
 
 
-  testModels: function(test) {
+  testSchemas: function(test) {
     var self = this;
 
-    var model = {
+    var schema = {
       s: String,
       n: Number,
       o: Object
@@ -382,7 +382,7 @@ exports.group1 = {
       // Initialize.
       //
       function openColl6(callback) {
-        db.collection('coll6', model, function(err, coll) {
+        db.collection('coll6', schema, function(err, coll) {
           test.ok(!err, 'Error');
           coll6 = coll;
           callback();
@@ -392,7 +392,7 @@ exports.group1 = {
         db.coll6.insert({s:'a', n:1, o:{x:1, y:2}}, function(err, ob) {
           if (err) return callback(err);
 
-          test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, _id:ob._id}, 'model insert a result');
+          test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, _id:ob._id}, 'schema insert a result');
 
           callback();
         });
@@ -401,7 +401,7 @@ exports.group1 = {
         db.coll6.insert({s:'b', n:'2', o:'{x:1, y:2}', z:99}, function(err, ob) {
           if (err) return callback(err);
 
-          test.deepEqual(ob, {s:'b', n:'2', _id:ob._id}, 'model insert b result');
+          test.deepEqual(ob, {s:'b', n:'2', _id:ob._id}, 'schema insert b result');
 
           callback();
         });

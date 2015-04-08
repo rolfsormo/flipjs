@@ -114,7 +114,7 @@ define("Flip", function(){});
       this.options.sep = this.options.sep || '#';
       this.options.keyBase = this.options.keyBase || 32;
       this.options.keyLength = this.options.keyLength || 3;
-      // this.options.enforceModel = this.options.enforceModel || false;
+      // this.options.enforceSchema = this.options.enforceSchema || false;
 
       if (YAML && this.options.allowYAML !== false) {
         if (debug) console.log('* YAMLing');
@@ -160,15 +160,15 @@ define("Flip", function(){});
       for(var k in collections) if (collections[k].key === key) return true;
     }
 
-    KeyValueAdapter.prototype.collection = function(collection, model, next) {
+    KeyValueAdapter.prototype.collection = function(collection, schema, next) {
 
-      if (typeof model === 'function') {
-        next = model;
-        model = undefined;
+      if (typeof schema === 'function') {
+        next = schema;
+        schema = undefined;
       }
 
       // Make sure we have an _id always.
-      if (model && !model._id) model._id = String;
+      if (schema && !schema._id) schema._id = String;
 
       var kva = this;
       var sys = this.system.collections[collection] || {};
@@ -178,21 +178,21 @@ define("Flip", function(){});
         sys.key = (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
       }
 
-      function enforceModel(ob) {
+      function enforceSchema(ob) {
         var key;
 
-        if (!model) return;
+        if (!schema) return;
 
         // Clear extras.
         for(key in ob) {
-          if (!model[key]) delete ob[key];
+          if (!schema[key]) delete ob[key];
         }
         // Format values correctly, set defaults, etc.
-        for(key in model) {
-          if (!model[key].type) {
-            model[key] = { type: model[key] };
+        for(key in schema) {
+          if (!schema[key].type) {
+            schema[key] = { type: schema[key] };
           }
-          switch(model[key].type) {
+          switch(schema[key].type) {
             case String:
               ob[key] = String(ob[key]);
               break;
@@ -261,7 +261,7 @@ define("Flip", function(){});
         var self = this;
         var key = sys.key + this.options.sep + ob._id;
 
-        if(this.options.enforceModel) enforceModel(ob);
+        if(this.options.enforceSchema) enforceSchema(ob);
 
         adapter.set(key, self.adapter.serialize(ob), function(err, val) {
           next(err, ob);
@@ -270,7 +270,7 @@ define("Flip", function(){});
 
       KVACollection.prototype.update = function(ob, next) {
 
-        if(this.options.enforceModel) enforceModel(ob);
+        if(this.options.enforceSchema) enforceSchema(ob);
 
         adapter.set(kva.dbName, collection, ob._id, this.adapter.serialize(ob), function(err, val) {
           next(err, ob);
