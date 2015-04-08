@@ -57,13 +57,23 @@
   };
 
   Flip.prototype.generateId = function() {
-    function format(i) {
-      return i.toString(16).substring(1);
+    return new Date().getTime().toString(16).substring(1) + this._generateKey(16, 6) + this._generateKey(16, 6);
+  };
+
+  Flip.prototype._generateKey = function(base, length) {
+    base = base || 32;
+    length = length || 3;
+    return Math.floor(Math.pow(base,length-1) + Math.random() * (Math.pow(base,length) - Math.pow(base,length-1))).toString(base);
+  };
+
+  Flip.prototype._extend = function(target) {
+    for(var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for(var key in source) {
+        if (source.hasOwnProperty(key)) target[key] = source[key];
+      }
     }
-    function r() {
-      return Math.floor((1 + Math.random()) * 0x10000);
-    }
-    return format(new Date().getTime()) + format(r()) + format(r()) + format(r());
+    return target;
   };
 
   return new Flip();
@@ -99,22 +109,6 @@ define("Flip", function(){});
   if (debug) {
     if (!YAML) console.log('YAML not available');
     if (!bson) console.log('bson not available');
-  }
-
-  function shortKey(base, length) {
-    base = base || 32;
-    length = length || 3;
-    return Math.floor(Math.pow(base,length-1) + Math.random() * (Math.pow(base,length) - Math.pow(base,length-1))).toString(base);
-  }
-
-  function extend(target) {
-    for(var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for(var key in source) {
-        if (source.hasOwnProperty(key)) target[key] = source[key];
-      }
-    }
-    return target;
   }
 
   return function(adapter) {
@@ -161,7 +155,7 @@ define("Flip", function(){});
           self.system = system || {};
 
           self.system.collections = self.system.collections || {};
-          self.system.key = self.system.key || shortKey(self.options.keyBase, self.options.keyLength);
+          self.system.key = self.system.key || Flip._generateKey(self.options.keyBase, self.options.keyLength);
           next(undefined, self);
         });
       });
@@ -187,14 +181,14 @@ define("Flip", function(){});
       var kva = this;
       var sys = this.system.collections[collection] || {};
 
-      var key = sys.key = sys.key || (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
+      var key = sys.key = sys.key || (this.system.key + Flip._generateKey(this.options.keyBase, this.options.keyLength));
       while (hasCollectionKey(this.system.collections, sys.key)) {
-        sys.key = (this.system.key + shortKey(this.options.keyBase, this.options.keyLength));
+        sys.key = (this.system.key + Flip._generateKey(this.options.keyBase, this.options.keyLength));
       }
 
       function KVACollection(options, adapter) {
         this.options = Object.create(options); // inherit from the db options
-        if (options) extend(this.options, collOptions);
+        if (options) Flip._extend(this.options, collOptions);
 
         this.adapter = adapter;
       }
