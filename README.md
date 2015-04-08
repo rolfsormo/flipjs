@@ -97,11 +97,11 @@ Flip.js is supported in different browsers and operating systems, and in [Node.j
 
 - - -
 
-## Where we are now
+# Mongodb query documents
 
 See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-documents/) for details.
 
-### Done
+## Done (for KeyValueAdapter)
 
 * Specify Equality Condition
 * Specify Conditions Using Query Operators
@@ -116,7 +116,7 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
   * $and
   * $not
 
-### To do
+## To do
 
 * Specify Conditions Using Query Operators
   * $nor
@@ -148,6 +148,37 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
 
 - - -
 
+# Schemas
+
+See [Mongoose Schematypes|http://mongoosejs.com/docs/schematypes.html] for description of the schema types we support. Our support is more like "nice to have", in the sense that the db adaptors work without schemas, they just might not be (read: aren't) optimal. Especially with SQL adaptors we can create correct tables from schemas and use those, instead of storing JSON in the db.
+
+## Done (for KeyValueAdapter)
+
+* String
+* Number
+
+
+## Todo
+
+* Common features
+  * `default`
+* String
+  * `lowercase`
+  * `trim`
+* Number
+  * `min`
+  * `max`
+* Date
+* Buffer
+* Boolean
+* Mixed
+* ObjectId
+* Array
+
+
+
+- - -
+
 ## How to get there
 
 The project is not there yet. A few steps have to be taken for this project to be mature. The steps are:
@@ -160,17 +191,17 @@ The project is not there yet. A few steps have to be taken for this project to b
 
 ## TODO
 
-- Support providing mongoose-like models for better SQL db and index creation
+- Support providing mongoose-like schemas for better SQL db and index creation
 - Make a wiki page with a table with all known browsers and show the default adapter for them (first one detected) and for each adapter if it is supported
 - Support ensureIndex() (when supported; depends on the adapter most likely)
 - Support SQL databases naïvely by storing keys and values there first, but later generate alter tables with all new ensureIndex() calls
 - Make browser tests, run them with some headless unit test framework
 - Push to NPM and bower
-- flip-cli, that can at least "flip learn <db-url>" and output the options and models to support that (keyvalue db's study the data, sql db's use describe or some such AND study the _extras-field)
-- models: if sql db doesn't have a model (or encounter a field that is not in the model) the field will be saved into a generic _extras -field (json string) that cannot be queried directly, but with the MongoMatcher only after the data has been read to memory (=slow, up to the developer to create the correct model eventually, possibly with "flip learn")
+- flip-cli, that can at least "flip learn <db-url>" and output the options and shcemas to support that (keyvalue db's study the data, sql db's use describe or some such AND study the _extras-field)
+- schemas: if sql db doesn't have a schema (or encounter a field that is not in the schema) the field will be saved into a generic _extras -field (json string) that cannot be queried directly, but with the MongoMatcher only after the data has been read to memory (=slow, up to the developer to create the correct schema eventually, possibly with "flip learn")
 - add url and urls field to options for supporting multiple cassandra instances, but also possibly eventually replicating to several db's
-- mongo support with native mongodb AND mongoose (can reuse the models directly IF the options are correct)
-- add validateModel-option that only throws exceptions if data is incorrect, not correct it
+- mongo support with native mongodb AND mongoose (can reuse the schemas directly IF the options are correct)
+- add validateSchema-option that only throws exceptions if data is incorrect, not correct it
 
 # Running tests
 
