@@ -150,7 +150,7 @@ See [Mongodb query documents](http://docs.mongodb.org/manual/tutorial/query-docu
 
 # Schemas
 
-See [Mongoose Schematypes|http://mongoosejs.com/docs/schematypes.html] for description of the schema types we support. Our support is more like "nice to have", in the sense that the db adaptors work without schemas, they just might not be (read: aren't) optimal. Especially with SQL adaptors we can create correct tables from schemas and use those, instead of storing JSON in the db.
+See [Mongoose Schematypes](http://mongoosejs.com/docs/schematypes.html) for description of the schema types we support. Our support is more like "nice to have", in the sense that the db adaptors work without schemas, they just might not be (read: aren't) optimal. Especially with SQL adaptors we can create correct tables from schemas and use those, instead of storing JSON in the db.
 
 ## Done (for KeyValueAdapter)
 
