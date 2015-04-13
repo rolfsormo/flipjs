@@ -25,7 +25,7 @@ function series(arr, callback) {
     iterate();
 }
 
-exports.group1 = {
+exports.base_test = {
   setUp: function(callback) {
     var self = this;
     Flip.connect('BaseTest', {allowFileStorage:true, requirePersistency:true, enforceSchema:true}, function(err, _db) {
@@ -42,10 +42,10 @@ exports.group1 = {
 
     test.expect(3);
     db.collection('coll1', function(err, coll1) {
-      test.ok(!err, 'Error');
+      test.ifError(err);
 
       coll1.insert({a:'a'}, function(err, ob) {
-        test.ok(!err, 'Error');
+        test.ifError(err);
 
         test.equal(ob.a, 'a');
         test.done();
@@ -66,7 +66,7 @@ exports.group1 = {
       function openColl2(callback) {
         db.collection('coll2', function(err, coll) {
           coll2 = coll;
-          test.ok(!err, 'Error');
+          test.ifError(err);
           callback();
         });
       },
@@ -81,7 +81,7 @@ exports.group1 = {
       //
       function testField(callback) {
         coll2.find({a:'a'}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, 'Result list length');
           test.deepEqual(list, [a], 'List equals');
@@ -90,7 +90,7 @@ exports.group1 = {
       },
       function testNe(callback) {
         coll2.find({a:{$ne:'a'}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, 'Result list length');
           test.deepEqual(list, [b], 'List equals');
@@ -100,7 +100,7 @@ exports.group1 = {
       },
       function testTwoFields(callback) {
         coll2.find({a:'a', c:'c'}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, 'Result list length');
           test.deepEqual(list, [a], 'List equals');
@@ -108,7 +108,7 @@ exports.group1 = {
         });
       },
     ], function(err) {
-      test.ok(!err, 'Error!');
+      test.ifError(err);
       test.done();
     });
   },
@@ -127,7 +127,7 @@ exports.group1 = {
       function openColl3(callback) {
         db.collection('coll3', function(err, coll) {
           coll3 = coll;
-          test.ok(!err, 'Error');
+          test.ifError(err);
           callback();
         });
       },
@@ -142,7 +142,7 @@ exports.group1 = {
       //
       function testGt(callback) {
         coll3.find({val:{$gt:0}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$gt compare result length');
           test.deepEqual(list, [a], '$gt compare result');
@@ -154,7 +154,7 @@ exports.group1 = {
       //
       function testGte(callback) {
         coll3.find({val:{$gte:1}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$gte compare result length');
           test.deepEqual(list, [a], '$gte compare result');
@@ -166,7 +166,7 @@ exports.group1 = {
       //
       function testLt(callback) {
         coll3.find({val:{$lt:1}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$lt compare result length');
           test.deepEqual(list, [b], '$lt compare result');
@@ -178,7 +178,7 @@ exports.group1 = {
       //
       function testLte(callback) {
         coll3.find({val:{$lte:0}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$lte compare result length');
           test.deepEqual(list, [b], '$lte compare result');
@@ -186,7 +186,7 @@ exports.group1 = {
         });
       },
     ], function(err) {
-      test.ok(!err, 'Error!');
+      test.ifError(err);
       test.done();
     });
   },
@@ -205,7 +205,7 @@ exports.group1 = {
       //
       function openColl4(callback) {
         db.collection('coll4', function(err, coll) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           coll4 = coll;
           callback();
         });
@@ -222,7 +222,7 @@ exports.group1 = {
       //
       function testIn(callback) {
         coll4.find({val:{$in:['a']}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$in compare result length');
           test.deepEqual(list, [a], '$in compare result');
@@ -234,7 +234,7 @@ exports.group1 = {
       //
       function testNin(callback) {
         coll4.find({val:{$nin:['a']}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
 
           test.equal(list.length, 1, '$nin compare result length');
           test.deepEqual(list, [b], '$nin compare result');
@@ -242,7 +242,7 @@ exports.group1 = {
         });
       },
     ], function(err) {
-      test.ok(!err, 'Error!');
+      test.ifError(err);
       test.done();
     });
   },
@@ -261,7 +261,7 @@ exports.group1 = {
       //
       function openColl5(callback) {
         db.collection('coll5', function(err, coll) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           coll5 = coll;
           callback();
         });
@@ -278,7 +278,7 @@ exports.group1 = {
       //
       function testOrBoth(callback) {
         db.coll5.find({$or:[{a:'a'}, {b:'b'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 2, '$or compare result length');
 
           callback(err);
@@ -286,7 +286,7 @@ exports.group1 = {
       },
       function testOrNeither(callback) {
         db.coll5.find({$or:[{a:'b'}, {b:'a'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 0, '$or compare result length');
 
           callback(err);
@@ -294,7 +294,7 @@ exports.group1 = {
       },
       function testOrA(callback) {
         db.coll5.find({$or:[{a:'a'}, {b:'a'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 1, '$or compare result length');
 
           test.deepEqual(list, [a], '$or compare result');
@@ -307,7 +307,7 @@ exports.group1 = {
       //
       function testAndBoth(callback) {
         db.coll5.find({$and:[{c:'c'}, {d:'d'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 2, '$and compare result length');
 
           callback(err);
@@ -315,7 +315,7 @@ exports.group1 = {
       },
       function testAndNeither(callback) {
         db.coll5.find({$and:[{a:'b'}, {c:'c'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 0, '$and compare result length');
 
           callback(err);
@@ -323,7 +323,7 @@ exports.group1 = {
       },
       function testAndA(callback) {
         db.coll5.find({$and:[{a:'a'}, {c:'c'}]}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 1, '$and compare result length');
           test.deepEqual(list, [a], '$and compare result');
 
@@ -336,7 +336,7 @@ exports.group1 = {
       //
       function testNotOne(callback) {
         db.coll5.find({a:{$not:'a'}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 1, '$not compare result length');
           test.deepEqual(list, [b], '$not compare result');
 
@@ -345,7 +345,7 @@ exports.group1 = {
       },
       function testNotNone(callback) {
         db.coll5.find({c:{$not:'c'}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 0, '$not compare result length');
 
           callback(err);
@@ -353,14 +353,14 @@ exports.group1 = {
       },
       function testNotAll(callback) {
         db.coll5.find({c:{$not:'b'}}, function(err, list) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           test.equal(list.length, 2, '$not compare result length');
 
           callback(err);
         });
       },
     ], function(err) {
-      test.ok(!err, 'Error!');
+      test.ifError(err);
       test.done();
     });
   },
@@ -382,21 +382,21 @@ exports.group1 = {
     var options = { xyz: 'xxx' };
     var coll6;
 
-    test.expect(4);
+    test.expect(6);
     series([
       //
       // Initialize.
       //
       function openColl6(callback) {
         db.collection('coll6', schema, options, function(err, coll) {
-          test.ok(!err, 'Error');
+          test.ifError(err);
           coll6 = coll;
           callback();
         });
       },
       function insertA(callback) {
         db.coll6.insert({s:'a', n:1, o:{x:1, y:2}, d:'2015-04-08 0:0:0'}, function(err, ob) {
-          if (err) return callback(err);
+          test.ifError(err);
 
           test.deepEqual(ob, {s:'a', n:1, o:{x:1, y:2}, d:new Date('2015-04-08 0:0:0'), _id:ob._id, d2:ob.d2}, 'schema insert a result');
 
@@ -405,7 +405,7 @@ exports.group1 = {
       },
       function insertB(callback) {
         db.coll6.insert({s:'b', n:'2', o:'{x:1, y:2}', z:99}, function(err, ob) {
-          if (err) return callback(err);
+          test.ifError(err);
 
           test.deepEqual(ob, {s:'b', n:'2', _id:ob._id, d2:ob.d2}, 'schema insert b result');
 
@@ -413,7 +413,7 @@ exports.group1 = {
         });
       },
     ], function(err) {
-      test.ok(!err, 'Error!');
+      test.ifError(err);
       test.done();
     });
 
