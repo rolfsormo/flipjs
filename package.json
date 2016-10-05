@@ -6,7 +6,7 @@
   "scripts": {
     "test": "qunit -h"
   },
-  "author": "Rolf Sormo <rolf.sormo@aphex.fi>",
+  "author": "Rolf Sormo <rolf@iki.fi>",
   "repository": "https://github.com/rolfsormo/flipjs/",
   "license": "MIT",
   "devDependencies": {
