@@ -194,6 +194,7 @@ The project is not there yet. A few steps have to be taken for this project to b
 - ES6, probably ES2016+
 - Maybe use lodash (or similar) to make the code cleaner
 - http://json-schema.org instead of Mongoose schemas
+- npm i -g flip-cli && flip export mysql://root:root@localhost/db1 --json > dbdump.json && flip import mongodb://root:root@localhost/db1 < dbdump.json (get the point?)
 - Support providing mongoose-like schemas for better SQL db and index creation
 - Make a wiki page with a table with all known browsers and show the default adapter for them (first one detected) and for each adapter if it is supported
 - Support ensureIndex() (when supported; depends on the adapter most likely)
